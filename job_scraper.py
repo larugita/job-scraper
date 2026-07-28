@@ -13,4 +13,8 @@ print(len(jobs))
 
 for job in jobs:
     title = job.find("h2", class_="title")
-    print(title.text)
+    company = job.find("h3", class_ = "company")
+    apply_link = job.find("a", string="Apply")
+    url = apply_link["href"]
+    print(title.text + " — " + company.text + " : " + url)
+
