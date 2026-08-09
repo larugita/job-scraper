@@ -9,30 +9,38 @@ def fetch_page(url):
 
 soup = fetch_page("https://realpython.github.io/fake-jobs/")
 
-jobs = soup.find_all("div", class_="card")
+def scrape_jobs(soup):
+    jobs = soup.find_all("div", class_="card")
+    jobs_data = []
+    for job in jobs:
+        title = job.find("h2", class_="title")
+        company = job.find("h3", class_ = "company")
+        apply_link = job.find("a", string="Apply")
+        link = apply_link["href"]
+        job_dict = {
+            "title": title.text.strip(),
+            "company": company.text.strip(),
+            "link": link
+        }
+        jobs_data.append(job_dict)
 
-jobs_data = []
+    return jobs_data
 
-for job in jobs:
-    title = job.find("h2", class_="title")
-    company = job.find("h3", class_ = "company")
-    apply_link = job.find("a", string="Apply")
-    link = apply_link["href"]
-    job_dict = {
-        "title": title.text.strip(),
-        "company": company.text.strip(),
-        "link": link
-    }
-    jobs_data.append(job_dict)
+jobs_data = scrape_jobs(soup)
 
-python_jobs = []
+def filter_jobs(jobs_data, keyword):
+    filtered_jobs = []
+    for job in jobs_data:
+        if keyword.lower() in job["title"].lower():
+            filtered_jobs.append(job)
+    return filtered_jobs
 
-for job in jobs_data:
-    if "python" in job["title"].lower():
-        python_jobs.append(job)
+filtered_jobs = filter_jobs(jobs_data, "python")
 
-if python_jobs:
+print(filtered_jobs)
+
+if filtered_jobs:
     with open("python_jobs.csv", "w", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames = python_jobs[0].keys())
+        writer = csv.DictWriter(file, fieldnames = filtered_jobs[0].keys())
         writer.writeheader()
-        writer.writerows(python_jobs)
+        writer.writerows(filtered_jobs)
