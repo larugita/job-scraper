@@ -2,10 +2,12 @@ import requests
 import csv
 from bs4 import BeautifulSoup
 
-url = "https://realpython.github.io/fake-jobs/"
-response = requests.get(url)
+def fetch_page(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, "html.parser")
+    return soup
 
-soup = BeautifulSoup(response.text, "html.parser")
+soup = fetch_page("https://realpython.github.io/fake-jobs/")
 
 jobs = soup.find_all("div", class_="card")
 
@@ -31,6 +33,6 @@ for job in jobs_data:
 
 if python_jobs:
     with open("python_jobs.csv", "w", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames= python_jobs[0].keys())
+        writer = csv.DictWriter(file, fieldnames = python_jobs[0].keys())
         writer.writeheader()
         writer.writerows(python_jobs)
