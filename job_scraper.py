@@ -15,11 +15,13 @@ def scrape_jobs(soup):
     for job in jobs:
         title = job.find("h2", class_="title")
         company = job.find("h3", class_ = "company")
+        location = job.find("p", class_ = "location")
         apply_link = job.find("a", string="Apply")
         link = apply_link["href"]
         job_dict = {
             "title": title.text.strip(),
             "company": company.text.strip(),
+            "location": location.text.strip(),
             "link": link
         }
         jobs_data.append(job_dict)
@@ -36,8 +38,6 @@ def filter_jobs(jobs_data, keyword):
     return filtered_jobs
 
 filtered_jobs = filter_jobs(jobs_data, "python")
-
-print(filtered_jobs)
 
 if filtered_jobs:
     with open("python_jobs.csv", "w", newline="") as file:
