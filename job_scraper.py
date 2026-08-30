@@ -3,13 +3,11 @@ import csv
 import sqlite3
 from bs4 import BeautifulSoup
 
-
 # Connect to the SQLite database
 connection = sqlite3.connect("jobs.db")
 
 # Create a cursor to send SQL commands to the database
 cursor = connection.cursor()
-
 
 # Create the jobs table
 cursor.execute("""
@@ -19,13 +17,12 @@ cursor.execute("""
         company TEXT,
         location TEXT,
         date TEXT,
-        link TEXT
+        link TEXT UNIQUE
     )
 """)
 
 # Save the database changes
 connection.commit()
-
 
 def fetch_page(url):
     response = requests.get(url)
@@ -74,6 +71,27 @@ def scrape_jobs(soup):
 
 jobs_data = scrape_jobs(soup)
 
+for job in jobs_data:
+    cursor.execute("""
+    INSERT OR IGNORE INTO jobs (title, company, location, date, link)
+    VALUES(?, ?, ?, ?, ?)
+    """, (
+        job["title"],
+        job["company"],
+        job["location"],
+        job["date"],
+        job["link"]
+    ))
+
+    # Save inserted jobs
+    connection.commit()
+
+cursor.execute("SELECT * FROM jobs")
+
+rows = cursor.fetchall()
+
+for row in rows:
+    print(row)
 
 def filter_jobs(jobs_data, keyword):
 
