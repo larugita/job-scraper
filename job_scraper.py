@@ -1,6 +1,12 @@
 import requests
 import csv
+import sqlite3
 from bs4 import BeautifulSoup
+
+connection = sqlite3.connect("jobs.db")
+cursor = connection.cursor()
+
+
 
 def fetch_page(url):
     response = requests.get(url)
