@@ -10,7 +10,7 @@ def home():
 @app.get("/jobs")
 def get_jobs(keyword: str = None, location: str = None):
     conn = sqlite3.connect("jobs.db")
-    conn.row_factory = sqlite3.Row
+    conn.row_factory = sqlite3.Row 
 
     cursor = conn.cursor()
     if keyword and location:
