@@ -36,24 +36,25 @@ def fetch_jobs(url):
 
     return None
 
-
-data = fetch_jobs("https://boards-api.greenhouse.io/v1/boards/stripe/jobs")
+companies = ["stripe", "doordashcanada", "reddit"]
 
 jobs_data = []
 
-if data:
+for company in companies:
+    url = f"https://boards-api.greenhouse.io/v1/boards/{company}/jobs"
+    data = fetch_jobs(url)
 
-    for job in data["jobs"]:
+    if data:
+        for job in data["jobs"]:
+            job_dict = {
+                "title": job["title"],
+                "company": job["company_name"],
+                "location": job["location"]["name"],
+                "date": job["first_published"],
+                "link": job["absolute_url"]
+            }
 
-        job_dict = {
-            "title": job["title"],
-            "company": job["company_name"],
-            "location": job["location"]["name"],
-            "date": job["first_published"],
-            "link": job["absolute_url"]
-        }
-
-        jobs_data.append(job_dict)
+            jobs_data.append(job_dict)
 
 
 for job in jobs_data:
