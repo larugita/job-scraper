@@ -26,7 +26,6 @@ link TEXT UNIQUE
 
 connection.commit()
 
-
 def fetch_jobs(url):
 
     response = requests.get(url)
