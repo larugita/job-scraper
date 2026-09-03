@@ -8,20 +8,26 @@ def home():
     return {"message": "Job Scraper API is running"}
 
 @app.get("/jobs")
-def get_jobs(keyword: str = None, location: str = None):
+def get_jobs(keyword: str = None, location: str = None, limit: int = 10):
     conn = sqlite3.connect("jobs.db")
-    conn.row_factory = sqlite3.Row 
+    conn.row_factory = sqlite3.Row
+    query = "SELECT * FROM jobs"
+    params = []
 
     cursor = conn.cursor()
-    if keyword and location:
-        cursor.execute("SELECT * FROM jobs WHERE title LIKE ? AND location LIKE ?", 
-        (f"%{keyword}%", f"%{location}%"))
-    elif keyword:
-        cursor.execute("SELECT * FROM jobs WHERE title LIKE ?", (f"%{keyword}%",))
-    elif location:
-        cursor.execute("SELECT * FROM jobs WHERE location LIKE ?", (f"%{location}%",))
-    else:
-        cursor.execute("SELECT * FROM jobs")
+    if keyword:
+        query += " WHERE title LIKE ?"
+        params.append(f"%{keyword}%")
+    if location:
+        if keyword:
+            query += " AND location LIKE ?"
+        else:
+            query += " WHERE location like ?"
+        params.append(f"%{location}%")
+    query += " LIMIT ?"
+    params.append(limit)
+
+    cursor.execute(query, params)
 
     jobs = cursor.fetchall()
     jobs = [dict(job) for job in jobs]
