@@ -73,13 +73,4 @@ for job in jobs_data:
 
 connection.commit()
 
-
-cursor.execute("SELECT COUNT(*) FROM jobs")
-
-count = cursor.fetchone()[0]
-
-print("Total jobs:", count)
-
-# Close the database connection when finished
-
 connection.close()
